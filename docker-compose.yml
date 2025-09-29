@@ -1,0 +1,30 @@
+services:
+  db:
+    image: mysql:8.4
+    container_name: javaapp-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=javaappdb
+      - MYSQL_USER=francoborzi
+      - MYSQL_PASSWORD=francoborzi123
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  javacrud-app:
+    build: .
+    container_name: java_crud_app
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/javaappdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: francoborzi
+      SPRING_DATASOURCE_PASSWORD: francoborzi123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
